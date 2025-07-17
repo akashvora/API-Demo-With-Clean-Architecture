@@ -1,0 +1,41 @@
+﻿version: '3.9'
+
+# # Build the Docker image
+# docker build -f Movies.Api/Dockerfile -t Movie.Api .
+services:
+
+  # api:
+  # webapp:
+  #   build:
+  #     context: .  # ✅ Uses the Dockerfile in the current directory
+  #     # dockerfile: Dockerfile  # ✅ Explicitly references the Dockerfile
+  #      #dockerfile: Movies.Api/Dockerfile
+  #     dockerfile: Dockerfile
+  #     args:
+  #       - COPY ["Movies.Api/Movies.Api.csproj", "Movies.Api/"]
+  #       - COPY ["Movies.Application/Movies.Application.csproj", "Movies.Application/"]
+  #       - COPY ["Movies.Contracts/Movies.Contracts.csproj", "Movies.Contracts/"]
+  #   ports:
+  #     - "5000:80"  # ✅ Maps host port 5000 to container port 80
+  #     - "44364:443"  # Enables HTTPS if needed
+
+  #   depends_on:
+  #     - db  # ✅ Ensures database starts before the web app
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Production  # ✅ Set environment variable if needed
+  #     - DOTNET_USE_POLLING_FILE_WATCHER=1  # ✅ Helps with file watching in containers
+  #   volumes:
+  #     - ./logs:/app/logs  # ✅ Example of mounting logs if needed
+
+  db:
+    image: postgres:latest  # Pulls the latest PostgreSQL image
+    restart: always  # Ensures the DB container restarts on failure
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=md5
+      - POSTGRES_USER=course
+      - POSTGRES_PASSWORD=dev@2030
+      - POSTGRES_DB=movies
+
+
+    ports:
+      - "5433:5432"  # Makes PostgreSQL accessible on port 5432
