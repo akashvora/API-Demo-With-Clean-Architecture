@@ -5,7 +5,7 @@ using Movies.Application.Common.Exceptions;
 using Movies.Application.Common.Interfaces;
 using Movies.Application.Database;
 using Movies.Application.Feature.Movies.Interfaces;
-using Movies.Application.Feature.Movies.Queries;
+using Movies.Application.Feature.Movies.Queries.GetAll;
 using Movies.Domain.Models;
 using Npgsql;
 
@@ -149,7 +149,7 @@ namespace Infrastructure.Repositories
 		}
 
 
-		public async Task<Result<IEnumerable<Movie>>> GetAllAsync(GetAllMoviesQuery query, Guid? userId = default, CancellationToken token = default)
+		public async Task<Result<IEnumerable<Movie>>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
 		{
 			//throw new NotImplementedException();
 			////return Task.FromResult(_movies.AsEnumerable());
@@ -168,8 +168,15 @@ namespace Infrastructure.Repositories
 					left join ratings r on m.id = r.movieId
 					left join ratings myr on m.id = myr.movieId
 					and myr.userid = @UserId
+					where (@title is null or m.title like ('%' || @title || '%'))
+					and (@yearofrelease is null or m.yearofrelease = @yearofrelease)
 					group by m.id, m.slug, m.title, m.yearofrelease,myr.rating
-					""", new {UserId = userId }, cancellationToken:token));
+					""", 
+					new {
+						UserId = options.UserId,
+						title= options.Title,
+						yearofrelease = options.Year
+					}, cancellationToken:token));
 
 			return Result<IEnumerable<Movie>>.Success(result.Select(x => new Movie { 
 				Id = x.id,

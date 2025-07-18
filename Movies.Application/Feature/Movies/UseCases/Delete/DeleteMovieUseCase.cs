@@ -1,5 +1,5 @@
 ﻿using Movies.Application.Common;
-using Movies.Application.Feature.Movies.Commands;
+using Movies.Application.Feature.Movies.Commands.Delete;
 using Movies.Application.Feature.Movies.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Application.Feature.Movies.UseCases
+namespace Movies.Application.Feature.Movies.UseCases.Delete
 {
 	public class DeleteMovieUseCase
 	{

@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 using FluentValidation;
 using Movies.Application.Feature.Movies.Interfaces;
-using Movies.Application.Feature.Rating.Commands;
-namespace Movies.Application.Feature.Rating.UseCases
+using Movies.Application.Feature.Rating.Commands.Create;
+namespace Movies.Application.Feature.Rating.UseCases.Create
 {
 	public class RatingUseCase
 	{

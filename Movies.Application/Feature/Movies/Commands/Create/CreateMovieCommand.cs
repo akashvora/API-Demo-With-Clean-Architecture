@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Movies.Application.Feature.Movies.Commands
+namespace Movies.Application.Feature.Movies.Commands.Create
 {
 	public class CreateMovieCommand
 	{

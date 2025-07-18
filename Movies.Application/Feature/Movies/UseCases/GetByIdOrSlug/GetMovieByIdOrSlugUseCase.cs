@@ -1,6 +1,6 @@
 ﻿using Movies.Application.Common;
 using Movies.Application.Feature.Movies.Interfaces;
-using Movies.Application.Feature.Movies.Queries;
+using Movies.Application.Feature.Movies.Queries.GetByIdOrSlug;
 using Movies.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Application.Feature.Movies.UseCases
+namespace Movies.Application.Feature.Movies.UseCases.GetByIdOrSlug
 {
 	public class GetMovieByIdOrSlugUseCase
 	{

@@ -5,8 +5,12 @@ using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.Common.Extensions;
 using Movies.Api.Models.Models.Requests;
 using Movies.Api.Models.Responses;
-using Movies.Application.Feature.Rating.Commands;
-using Movies.Application.Feature.Rating.UseCases;
+using Movies.Application.Feature.Rating.Commands.Create;
+using Movies.Application.Feature.Rating.Commands.Delete;
+using Movies.Application.Feature.Rating.Queries.Get;
+using Movies.Application.Feature.Rating.UseCases.Create;
+using Movies.Application.Feature.Rating.UseCases.Delete;
+using Movies.Application.Feature.Rating.UseCases.Get;
 using static Movies.Api.ApiEndpoints;
 
 namespace Movies.Api.Controllers
@@ -31,9 +35,9 @@ namespace Movies.Api.Controllers
 		public async Task<IActionResult> RateMovie([FromRoute] Guid id, [FromBody] RateMovieRequest request, CancellationToken cancellationToken)
 		{
 			var userId = HttpContext.GetUserId();
-			var RatingCommand = new RatingCommand { movieId = id, 
+			var ratingCommand = new RatingCommand { movieId = id, 
 			rating= request.Rating,  userId=userId.GetValueOrDefault()};
-			var result_ = await _ratingUseCase.InvokeAsync(RatingCommand,cancellationToken);
+			var result_ = await _ratingUseCase.InvokeAsync(ratingCommand,cancellationToken);
 			return result_ ? Ok() : BadRequest();
 		}
 
@@ -42,12 +46,12 @@ namespace Movies.Api.Controllers
 		public async Task<IActionResult> DeleteRating([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
 			var userId = HttpContext.GetUserId();
-			var DeleteRatingCommand = new DeleteRatingCommand
+			var deleteRatingCommand = new DeleteRatingCommand
 			{
 				movieId = id,
 				userId = userId.GetValueOrDefault()
 			};
-			var result_ = await _deleteRatingUseCase.InvokeAsync(DeleteRatingCommand, cancellationToken);
+			var result_ = await _deleteRatingUseCase.InvokeAsync(deleteRatingCommand, cancellationToken);
 			return result_ ? Ok() : BadRequest();
 		}
 
@@ -57,7 +61,7 @@ namespace Movies.Api.Controllers
 		public async Task<IActionResult> GetUserRatings(CancellationToken cancellationToken)
 		{
 			var userId = HttpContext.GetUserId();
-			var getRatingsForUserCommand = new GetRatingsForUserCommand
+			var getRatingsForUserCommand = new GetRatingsForUserQuery
 			{
 				userId = userId.GetValueOrDefault()
 			};

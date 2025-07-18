@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Authentication;
 using Infrastructure.DependecyInjection;
+using Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -63,6 +64,7 @@ builder.Host.UseSerilog(); // Register Serilog globally
 builder.Services.AddAutoMapper(cfg =>
 {
 	cfg.AddProfile<MappingProfile>();
+	cfg.AddProfile<RepositoryMappingProfile>();
 });
 //builder.Services.AddAutoMapper(typeof(Program)); // use this if all mapping profiles in same assembly
 

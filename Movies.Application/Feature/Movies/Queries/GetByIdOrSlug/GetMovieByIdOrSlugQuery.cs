@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Application.Feature.Movies.Queries
+namespace Movies.Application.Feature.Movies.Queries.GetByIdOrSlug
 {
 	public class GetMovieByIdOrSlugQuery
 	{

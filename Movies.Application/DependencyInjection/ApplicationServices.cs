@@ -1,8 +1,14 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Feature.Authentication.UsesCases;
-using Movies.Application.Feature.Movies.UseCases;
-using Movies.Application.Feature.Rating.UseCases;
+using Movies.Application.Feature.Movies.UseCases.Create;
+using Movies.Application.Feature.Movies.UseCases.Delete;
+using Movies.Application.Feature.Movies.UseCases.GetAll;
+using Movies.Application.Feature.Movies.UseCases.GetByIdOrSlug;
+using Movies.Application.Feature.Movies.UseCases.Update;
+using Movies.Application.Feature.Rating.UseCases.Create;
+using Movies.Application.Feature.Rating.UseCases.Delete;
+using Movies.Application.Feature.Rating.UseCases.Get;
 
 namespace Movies.Application.DependencyInjection
 {

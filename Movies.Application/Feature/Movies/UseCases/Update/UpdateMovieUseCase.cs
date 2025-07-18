@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using Movies.Application.Common;
-using Movies.Application.Feature.Movies.Commands;
+using Movies.Application.Feature.Movies.Commands.Update;
 using Movies.Application.Feature.Movies.Interfaces;
 using Movies.Application.Feature.Rating.Interfaces;
 using Movies.Domain.Models;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Application.Feature.Movies.UseCases
+namespace Movies.Application.Feature.Movies.UseCases.Update
 {
 	public class UpdateMovieUseCase
 	{

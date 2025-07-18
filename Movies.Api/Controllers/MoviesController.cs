@@ -4,9 +4,16 @@ using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.Common.Extensions;
 using Movies.Api.Mapping;
 using Movies.Api.Models.Requests;
-using Movies.Application.Feature.Movies.Commands;
-using Movies.Application.Feature.Movies.Queries;
-using Movies.Application.Feature.Movies.UseCases;
+using Movies.Application.Feature.Movies.Commands.Create;
+using Movies.Application.Feature.Movies.Commands.Delete;
+using Movies.Application.Feature.Movies.Commands.Update;
+using Movies.Application.Feature.Movies.Queries.GetAll;
+using Movies.Application.Feature.Movies.Queries.GetByIdOrSlug;
+using Movies.Application.Feature.Movies.UseCases.Create;
+using Movies.Application.Feature.Movies.UseCases.Delete;
+using Movies.Application.Feature.Movies.UseCases.GetAll;
+using Movies.Application.Feature.Movies.UseCases.GetByIdOrSlug;
+using Movies.Application.Feature.Movies.UseCases.Update;
 using Movies.Application.Feature.Rating.Interfaces;
 
 
@@ -115,12 +122,13 @@ namespace Movies.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpGet(ApiEndpoints.Movies.GetAll)]
-		public async Task<IActionResult> GetAll(CancellationToken token)
+		public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesQuery request , CancellationToken token)
 		{
-			var query = new GetAllMoviesQuery { };
+			//var query = new GetAllMoviesQuery { };
 			//var movies = await _movieRepository.GetAllAsync();
 			var userId = HttpContext.GetUserId();
-			var movies = await _getAllMoviesUsecase.ExecuteAsync(query, userId, token);
+			request.UserId = userId;
+			var movies = await _getAllMoviesUsecase.ExecuteAsync(request, token);
 			var movieResponse = movies.Value?.MapToResponse();
 			return Ok(movieResponse);
 		}

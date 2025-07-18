@@ -1,8 +1,8 @@
 ﻿using Movies.Application.Feature.Movies.Commands;
-using Movies.Application.Feature.Rating.Commands;
+using Movies.Application.Feature.Rating.Commands.Delete;
 using Movies.Application.Feature.Rating.Interfaces;
 
-namespace Movies.Application.Feature.Rating.UseCases
+namespace Movies.Application.Feature.Rating.UseCases.Delete
 {
 	public class DeleteRatingUseCase
 	{
