@@ -1,9 +1,10 @@
 ﻿using Movies.Application.Feature.Movies.Queries.GetAll;
 using Movies.Shared.Constants;
+using Movies.Shared.Contracts;
 
 namespace Movies.Api.Models.Requests
 {
-	public class GetAllMoviesRequest
+	public class GetAllMoviesRequest : IPagedRequest
 	{
 		//public PageRequest Paging { get; init; } = new PageRequest();// this is an alternative way to initialize Paging
 		//public PageRequest Paging { get; init; } = new PageRequest(1,10); // this is an alternative way to initialize Paging

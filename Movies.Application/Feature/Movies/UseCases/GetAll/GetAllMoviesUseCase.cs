@@ -31,7 +31,7 @@ namespace Movies.Application.Feature.Movies.UseCases.GetAll
 
 			var options = query.ToOptions(); // ToOptions static extenstion method handles sorting internally    var skip = (query.Page - 1) * query.PageSize;
 
-			await _validator.ValidateAndThrowAsync(options,token);
+			//await _validator.ValidateAndThrowAsync(options,token); // do not validate options here, validate it on controller
 			//(string? sortField, SortOrder sortOrder) = SortParser.ParseSortBy(query.SortBy);
 			// "SortParser.ParseSortBy(query.SortBy)" will return result: (null, SortOrder.Unsorted) if SortBy file will be empty or null or whitespace
 

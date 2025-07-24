@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.Common.Extensions;
@@ -32,7 +33,8 @@ namespace Movies.Api.Controllers
 		private readonly GetMovieByIdOrSlugUseCase _getMovieByIdOrSlugUseCase;
 		private readonly IRatingRepository _ratingRepository;  /// this will break the clean architecture. controller should have calling returing logic but in update call doing extra work on controlller
 		public MoviesController(//IMovieRepository movieRepository,
-			CreateMovieUseCase createMovieUseCase, GetMovieByIdOrSlugUseCase getMovieByIdOrSlugUseCase,UpdateMovieUseCase updateMovieUseCase, GetAllMoviesUseCase getAllMoviesUseCase, DeleteMovieUseCase deleteMovieUseCase, IRatingRepository ratingRepository)
+			CreateMovieUseCase createMovieUseCase, GetMovieByIdOrSlugUseCase getMovieByIdOrSlugUseCase,UpdateMovieUseCase updateMovieUseCase, GetAllMoviesUseCase getAllMoviesUseCase, DeleteMovieUseCase deleteMovieUseCase, IRatingRepository ratingRepository
+			,IValidator<GetAllMoviesRequest> validator)
 		{
 			//_movieRepository = movieRepository;
 			_createMovieUseCase = createMovieUseCase;
@@ -41,6 +43,8 @@ namespace Movies.Api.Controllers
 			_getAllMoviesUsecase = getAllMoviesUseCase;
 			_deleteMovieUseCase = deleteMovieUseCase;
 			_ratingRepository = ratingRepository;
+
+
 		}
 
 		//[HttpPost(ApiEndpoints.Movies.Create)]

@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Infrastructure.Authentication;
 using Infrastructure.DependecyInjection;
 using Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api.ApiDepedencyInjection;
 using Movies.Api.Common.AuthenticationEnums;
+using Movies.Api.DependencyInjection;
 using Movies.Api.Mapping;
 using Movies.Api.Middleware;
+using Movies.Api.Models.Requests.Validation;
 using Movies.Application.Database;
 using Movies.Application.DependencyInjection;
 using Movies.Application.Feature.Authentication.Interfaces;
@@ -71,7 +75,15 @@ builder.Services.AddAutoMapper(cfg =>
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//Register custom Filter
+//builder.Services
+//	.AddControllers()
+//	.AddApiFilters();
+
+builder.Services
+	.AddControllers();
+// .AddApiFilters(); // if you want to use custom filters for validation, then do not use automatic validation,
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -115,14 +127,25 @@ builder.Services.AddAuthorization(options =>
 // Register application services
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastutureServices();
+// register Rquest model validtors
+builder.Services
+	.AddApiRequestValidations();
+
+// Register API specific service 
+builder.Services.ConfigureApiBehavior(); // for custom API response behavior 
+										 // if uses filters then automatic validation will not work, so need to register manually
+										 // to keep automatic validation, do not use filters for validation 
+										 // and use InvalidModelStateResponseFactory 
 
 
+// Register database services
 var connectionString = builder.Configuration["Database:ConnectionString"];
 if (string.IsNullOrEmpty(connectionString))
 {
 	throw new InvalidOperationException("Database connection string is missing!");
 }
 builder.Services.AddDatabase(connectionString);
+
 
 var app = builder.Build();
 
