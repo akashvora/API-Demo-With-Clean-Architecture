@@ -122,14 +122,15 @@ namespace Movies.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpGet(ApiEndpoints.Movies.GetAll)]
-		public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesQuery request , CancellationToken token)
+		public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request , CancellationToken token)
 		{
 			//var query = new GetAllMoviesQuery { };
 			//var movies = await _movieRepository.GetAllAsync();
 			var userId = HttpContext.GetUserId();
-			request.UserId = userId;
-			var movies = await _getAllMoviesUsecase.ExecuteAsync(request, token);
-			var movieResponse = movies.Value?.MapToResponse();
+			//request.UserId = userId;
+			var movies = await _getAllMoviesUsecase.ExecuteAsync(request.ToQuery(userId:userId), token);
+			//var movieResponse = movies.Value?.Items?.MapToResponse();
+			var movieResponse = movies.Value;
 			return Ok(movieResponse);
 		}
 

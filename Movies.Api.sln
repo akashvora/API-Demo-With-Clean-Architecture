@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Domain", "Movies.Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{F809571D-B662-40D3-923C-EDCE68CF8AE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Shared", "Movies.Shared\Movies.Shared.csproj", "{811D25E2-3A39-4504-9B67-AD63EFC9623D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F809571D-B662-40D3-923C-EDCE68CF8AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F809571D-B662-40D3-923C-EDCE68CF8AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F809571D-B662-40D3-923C-EDCE68CF8AE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Movies.Contracts\Movies.Domain.csproj" />
+    <ProjectReference Include="..\Movies.Shared\Movies.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using Movies.Application.Feature.Movies.Queries.GetAll;
-using Movies.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Movies.Shared.Models.Paging;
 
 namespace Infrastructure.Mappings
 {
@@ -13,7 +8,22 @@ namespace Infrastructure.Mappings
 	{
 		public RepositoryMappingProfile()
 		{
-			CreateMap<GetAllMoviesOptions, GetAllMoviesQuery>().ReverseMap();
+			CreateMap<GetAllMoviesQuery, GetAllMoviesOptions>()
+			   .ForMember(dest => dest.SortField, opt => opt.Ignore())
+			   .ForMember(dest => dest.SortOrder, opt => opt.Ignore())
+			   .ForMember(dest => dest.Paging, opt => opt.MapFrom((src, _) => new PageRequest(src.Page, src.PageSize)))
+			.ReverseMap()
+			   .ForMember(dest => dest.SortBy, opt => opt.Ignore())
+			   .ForMember(dest => dest.Page, opt => opt.MapFrom(src => src.Paging.Page))
+			   .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.Paging.PageSize))
+			   .ForSourceMember(src => src.SortField, opt => opt.DoNotValidate())
+			   .ForSourceMember(src => src.SortOrder, opt => opt.DoNotValidate());
+
+
+			//CreateMap<PageRequest, GetAllMoviesQuery>()
+			//	.ForMember(dest => dest.Page, opt => opt.MapFrom(src => src.Page))
+			//	.ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+
 		}
 	}
 }

@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Movies.Application\Movies.Application.csproj" />
     <ProjectReference Include="..\Movies.Contracts\Movies.Domain.csproj" />
+    <ProjectReference Include="..\Movies.Shared\Movies.Shared.csproj" />
   </ItemGroup>
 
 </Project>

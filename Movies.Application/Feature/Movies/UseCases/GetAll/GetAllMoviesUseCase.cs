@@ -5,11 +5,9 @@ using Movies.Application.Common;
 using Movies.Application.Feature.Movies.Interfaces;
 using Movies.Application.Feature.Movies.Queries.GetAll;
 using Movies.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Movies.Shared.Models.Paging;
+using Movies.Shared.Enums;
+using Movies.Shared.Utilities;
 
 namespace Movies.Application.Feature.Movies.UseCases.GetAll
 {
@@ -26,11 +24,20 @@ namespace Movies.Application.Feature.Movies.UseCases.GetAll
 			_validator = validator;
 		}
 
-		public async Task<Result<IEnumerable<Movie>>> ExecuteAsync(GetAllMoviesQuery query, CancellationToken token = default)
+		public async Task<Result<PagedResult<Movie>>> ExecuteAsync(GetAllMoviesQuery query, CancellationToken token = default)
 		{
 
-			var options = _mapper.Map<GetAllMoviesOptions>(query);
+			//var options = _mapper.Map<GetAllMoviesOptions>(query);
+
+			var options = query.ToOptions(); // ToOptions static extenstion method handles sorting internally    var skip = (query.Page - 1) * query.PageSize;
+
 			await _validator.ValidateAndThrowAsync(options,token);
+			//(string? sortField, SortOrder sortOrder) = SortParser.ParseSortBy(query.SortBy);
+			// "SortParser.ParseSortBy(query.SortBy)" will return result: (null, SortOrder.Unsorted) if SortBy file will be empty or null or whitespace
+
+			//options.SortField = sortField;
+			//options.SortOrder = sortOrder;
+
 			return await _movieRepository.GetAllAsync(options, token);
 		}
 	}

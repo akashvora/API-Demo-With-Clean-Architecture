@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Microsoft.AspNetCore.Mvc;
+using Infrastructure.DataAccessModels;
 using Movies.Application.Common;
 using Movies.Application.Common.Exceptions;
 using Movies.Application.Common.Interfaces;
@@ -7,6 +7,8 @@ using Movies.Application.Database;
 using Movies.Application.Feature.Movies.Interfaces;
 using Movies.Application.Feature.Movies.Queries.GetAll;
 using Movies.Domain.Models;
+using Movies.Shared.Enums;
+using Movies.Shared.Models.Paging;
 using Npgsql;
 
 namespace Infrastructure.Repositories
@@ -123,9 +125,10 @@ namespace Infrastructure.Repositories
                     select m.id, m.slug, m.title, m.yearofrelease,round(avg(r.rating),1) as rating,myr.rating as userrating
                      from movies m
                      left join ratings r on m.id = r.movieId
-                     left join ratings myr on myr.id = myr.movieId
+                     left join ratings myr on m.id = myr.movieId
                      and myr.userid = @UserId
                     where m.slug = @Slug
+                    group by m.id, m.slug, m.title, m.yearofrelease, myr.rating
                     """, new { Slug = slug, UserId=userId }, cancellationToken: token));
 
 			if (movie is null)
@@ -149,7 +152,7 @@ namespace Infrastructure.Repositories
 		}
 
 
-		public async Task<Result<IEnumerable<Movie>>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
+		public async Task<Result<Movies.Shared.Models.Paging.PagedResult<Movie>>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
 		{
 			//throw new NotImplementedException();
 			////return Task.FromResult(_movies.AsEnumerable());
@@ -158,34 +161,82 @@ namespace Infrastructure.Repositories
 
 			using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
-			// Query the movie details
-			var result = await connection.QueryAsync(
-				new CommandDefinition("""
-					select  m.id, m.slug, m.title, m.yearofrelease, string_agg(g.name, ',') as genres, 
-					round(avg(r.rating),1) as rating,myr.rating as userrating
-					from movies m
-					left join genres g on m.id = g.movieid
-					left join ratings r on m.id = r.movieId
-					left join ratings myr on m.id = myr.movieId
-					and myr.userid = @UserId
-					where (@title is null or m.title like ('%' || @title || '%'))
-					and (@yearofrelease is null or m.yearofrelease = @yearofrelease)
-					group by m.id, m.slug, m.title, m.yearofrelease,myr.rating
-					""", 
-					new {
-						UserId = options.UserId,
-						title= options.Title,
-						yearofrelease = options.Year
-					}, cancellationToken:token));
+			//var orderClause = string.Empty;
+			//if (orderClause is not null)
+			//{
+			//	orderClause = $"""
+			//		,m.{options.SortField} 
+			//		order by m.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "asc" : "desc")}
+			//		""";
+			//}
 
-			return Result<IEnumerable<Movie>>.Success(result.Select(x => new Movie { 
+			var groupByClause = "m.id, m.slug, m.title, m.yearofrelease, myr.rating";
+			if (options.SortField is not null && !groupByClause.Contains(options.SortField))
+				groupByClause += $", m.{options.SortField}";
+
+			var orderByClause = options.SortField is null
+				? ""
+				: $"ORDER BY m.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "ASC" : "DESC")}";
+
+			var sql = $"""
+				-- Total Count Query
+				SELECT COUNT(DISTINCT m.id)
+				FROM movies m
+				LEFT JOIN genres g ON m.id = g.movieid
+				WHERE (@title IS NULL OR m.title ILIKE ('%' || @title || '%'))
+				  AND (@year IS NULL OR m.yearofrelease = @year);
+
+				-- Paged Data Query
+				SELECT m.id, m.title, m.yearofrelease,
+					   STRING_AGG(g.name, ',') AS genres,
+					   ROUND(AVG(r.rating), 1) AS rating,
+					   myr.rating AS userrating
+				FROM movies m
+				LEFT JOIN genres g ON m.id = g.movieid
+				LEFT JOIN ratings r ON m.id = r.movieId
+				LEFT JOIN ratings myr ON m.id = myr.movieId AND myr.userid = @UserId
+				WHERE (@title IS NULL OR m.title ILIKE ('%' || @title || '%'))
+				  AND (@year IS NULL OR m.yearofrelease = @year)
+				GROUP BY {groupByClause}
+				{orderByClause}
+				LIMIT @PageSize OFFSET @Skip;
+			""";
+
+			var parameters = new
+			{
+				UserId = options.UserId,
+				title = options.Title,
+				year = options.Year,
+				PageSize = options.Paging.PageSize,
+				Skip = options.Paging.Skip
+			};
+
+			var reader = await connection.QueryMultipleAsync(new CommandDefinition(sql, parameters, cancellationToken: token));
+
+			var totalCount = reader.ReadSingle<int>();
+			var movies = reader.Read<MovieRaw>().Select(x => new Movie
+			{
 				Id = x.id,
 				Title = x.title,
 				YearOfRelease = x.yearofrelease,
-				Genres = Enumerable.ToList( x.genres.Split(',')),
+				Genres = x.genres?.Split(',').ToList() ?? new List<string>(),
 				Rating = (float?)x.rating,
-				UserRating =(int?) x.userrating
-			}));
+				UserRating = (int?)x.userrating
+			}).ToList();
+
+			var pagedResult = new PagedResult<Movie>
+			{
+				Items = movies,
+				Paging = new PagingMetadata
+				{
+					Page = options.Paging.Page,
+					PageSize = options.Paging.PageSize,
+					TotalCount = totalCount
+				}
+			};
+
+			return Result<PagedResult<Movie>>.Success(pagedResult);
+			//return Result<PagedResult<Movie>>.Success();
 		}
 
 		public async Task<Result<bool>> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
