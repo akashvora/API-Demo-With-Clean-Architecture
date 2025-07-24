@@ -24,7 +24,8 @@ namespace Movies.Api.Controllers
 {
 
 	[ApiController]
-	[ApiVersion(1.0)]
+	[ApiVersion(1.0)]  // for better practice of versioning version it in different folder wise like V1/Controllers etc; V2/Controllers etc
+	[ApiVersion(2.0)]
 	[Authorize]
 	public class MoviesController : ControllerBase
 	{
@@ -128,12 +129,35 @@ namespace Movies.Api.Controllers
 
 		}
 
+		[MapToApiVersion(1.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
 		public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, CancellationToken token) 
 		{
 			var query = new GetMovieByIdOrSlugQuery { IdOrSlug=idOrSlug};
 			var userId = HttpContext.GetUserId();
 			var movie = await _getMovieByIdOrSlugUseCase.ExecuteAsync(query,userId, token);
+			if (movie == null)
+				return NotFound();
+
+			var response = movie.Value?.MapToResponse();
+			return Ok(response);
+
+			//var movie = Guid.TryParse(idOrSlug, out var id)?
+			//	await _movieRepository.GetByIdAsync(id)
+			//	: await _movieRepository.GetBySlugAsync(slug:idOrSlug);
+			//if (movie is null) 
+			//   {  return NotFound(); }
+			//var response =  movie.MapToResponse();
+			//return Ok(response);
+		}
+
+		[MapToApiVersion(2.0)]
+		[HttpGet(ApiEndpoints.Movies.Get)]
+		public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, CancellationToken token)
+		{
+			var query = new GetMovieByIdOrSlugQuery { IdOrSlug = idOrSlug };
+			var userId = HttpContext.GetUserId();
+			var movie = await _getMovieByIdOrSlugUseCase.ExecuteAsync(query, userId, token);
 			if (movie == null)
 				return NotFound();
 

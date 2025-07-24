@@ -23,7 +23,7 @@ namespace Movies.Api.Controllers
 			_mapper = mapper;
 		}
 
-		
+		[ApiVersion(1.0)]
 		[HttpPost(ApiEndpoints.AuthenticationCls.Authentication)]
 		public async Task<IActionResult> GenerateToken([FromBody] LoginRequest request, CancellationToken cancellationToken)
 		{

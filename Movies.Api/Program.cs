@@ -12,14 +12,14 @@ using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.DependencyInjection;
 using Movies.Api.Mapping;
 using Movies.Api.Middleware;
-using Movies.Api.Models.Requests.Validation;
-using Movies.Application.Database;
+using Movies.Api.Swagger;
 using Movies.Application.DependencyInjection;
 using Movies.Application.Feature.Authentication.Interfaces;
 using Movies.Infrastructure.Database;
 using NpgsqlTypes;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,10 +82,13 @@ builder.Services.AddApiVersioning(
 	//options.AssumeDefaultVersionWhenUnspecified = true;   // it says every action have versioning , look for default versioning
 															 
 		options.ReportApiVersions = true;
-		options.ApiVersionReader = new MediaTypeApiVersionReader("Api-Version");
-		//options.ApiVersionReader = new HeaderApiVersionReader("api-versionn"); // custom version to pass in headers
+		options.ApiVersionReader = ApiVersionReader.Combine(
+				new QueryStringApiVersionReader("api-version"),
+				new MediaTypeApiVersionReader("api-version"),
+				new HeaderApiVersionReader("api-version")
+			);
 
-	}).AddMvc();
+	}).AddMvc().AddApiExplorer();
 
 // Add services to the container.
 
@@ -99,12 +102,13 @@ builder.Services
 // .AddApiFilters(); // if you want to use custom filters for validation, then do not use automatic validation,
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+//builder.Services.AddEndpointsApiExplorer(); // remove this when configure swaggerGen with versioning and already added AddApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
 builder.Services.AddAuthentication(options => {
 	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -177,8 +181,14 @@ if (app.Environment.IsDevelopment())
 	var mapperConfig = app.Services.GetRequiredService<AutoMapper.IConfigurationProvider>();
 	mapperConfig.AssertConfigurationIsValid();
 
-	//app.UseSwagger();
-	//app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI(x=>
+	{
+		foreach (var desc in app.DescribeApiVersions())
+		{
+			x.SwaggerEndpoint($"/swagger/{desc.GroupName}/swagger.json", $"Movies API {desc.GroupName}");
+		}
+	});
 }
 
 // Register your custom exception middleware
