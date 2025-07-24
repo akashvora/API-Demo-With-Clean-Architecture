@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using FluentValidation;
 using Infrastructure.Authentication;
 using Infrastructure.DependecyInjection;
@@ -72,6 +73,19 @@ builder.Services.AddAutoMapper(cfg =>
 });
 //builder.Services.AddAutoMapper(typeof(Program)); // use this if all mapping profiles in same assembly
 
+builder.Services.AddApiVersioning(
+	options => {
+
+		options.DefaultApiVersion = new ApiVersion(1.0);
+		options.AssumeDefaultVersionWhenUnspecified = false; // if no versioning defined then give 400 error 
+															 // not lookup/consider the defualt versioning 
+	//options.AssumeDefaultVersionWhenUnspecified = true;   // it says every action have versioning , look for default versioning
+															 
+		options.ReportApiVersions = true;
+		options.ApiVersionReader = new MediaTypeApiVersionReader("Api-Version");
+		//options.ApiVersionReader = new HeaderApiVersionReader("api-versionn"); // custom version to pass in headers
+
+	}).AddMvc();
 
 // Add services to the container.
 
@@ -85,8 +99,8 @@ builder.Services
 // .AddApiFilters(); // if you want to use custom filters for validation, then do not use automatic validation,
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -163,8 +177,8 @@ if (app.Environment.IsDevelopment())
 	var mapperConfig = app.Services.GetRequiredService<AutoMapper.IConfigurationProvider>();
 	mapperConfig.AssertConfigurationIsValid();
 
-	app.UseSwagger();
-	app.UseSwaggerUI();
+	//app.UseSwagger();
+	//app.UseSwaggerUI();
 }
 
 // Register your custom exception middleware

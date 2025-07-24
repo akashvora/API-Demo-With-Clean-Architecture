@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Models.Requests;
 using Movies.Api.Models.Responses;
@@ -8,6 +9,7 @@ using Movies.Application.Feature.Authentication.UsesCases;
 namespace Movies.Api.Controllers
 {
 	[ApiController]
+	[ApiVersion(1.0)]
 	public class AuthenticationController : ControllerBase
 	{
 		private const string TokenSecret = "StoreAndLoadThisSecurely";

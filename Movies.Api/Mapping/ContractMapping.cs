@@ -19,7 +19,7 @@ namespace Movies.Api.Mapping
 		}
 		public static MovieResponse MapToResponse(this Movie movie)
 		{
-			return new MovieResponse
+				return new MovieResponse
 			{
 				Id = movie.Id,
 				Title = movie.Title,

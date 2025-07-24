@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Asp.Versioning;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Common.AuthenticationEnums;
@@ -21,8 +22,9 @@ using Movies.Application.Feature.Rating.Interfaces;
 
 namespace Movies.Api.Controllers
 {
-	
+
 	[ApiController]
+	[ApiVersion(1.0)]
 	[Authorize]
 	public class MoviesController : ControllerBase
 	{
@@ -122,12 +124,12 @@ namespace Movies.Api.Controllers
 
 			//return CreatedAtAction(nameof(Get), new { idOrSlug = result.Value?.Id }, result.Value);
 
-			return CreatedAtAction(nameof(Get), new { idOrSlug = movieResponse.Id }, movieResponse);
+			return CreatedAtAction(nameof(GetV1), new { idOrSlug = movieResponse.Id }, movieResponse);
 
 		}
 
 		[HttpGet(ApiEndpoints.Movies.Get)]
-		public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token) 
+		public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, CancellationToken token) 
 		{
 			var query = new GetMovieByIdOrSlugQuery { IdOrSlug=idOrSlug};
 			var userId = HttpContext.GetUserId();

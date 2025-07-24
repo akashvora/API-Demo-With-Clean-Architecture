@@ -80,8 +80,8 @@ namespace Infrastructure.Repositories
 				var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
 				new CommandDefinition("""
                     select m.id, m.slug, m.title, m.yearofrelease,round(avg(r.rating)) as rating,myr.rating as userrating
-                    from movies m left join ratings r on m.id = r.movieId left join ratings myr on myr.id = myr.movieId and myr.userid = @UserId
-                    where m.id = @Id
+                    from movies m left join ratings r on m.id = r.movieId left join ratings myr on m.id = myr.movieId and myr.userid = @UserId
+                    where m.id = @Id group by m.id , m.slug, m.title, m.yearofrelease,myr.rating 
                     """, new { Id = id, UserId=userId }, cancellationToken: token));
 
 				if (movie is null)

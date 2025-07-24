@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Common.AuthenticationEnums;
@@ -16,6 +17,7 @@ using static Movies.Api.ApiEndpoints;
 namespace Movies.Api.Controllers
 {
 	[ApiController]
+	[ApiVersion(1.0)]
 	public class RatingController : ControllerBase
 	{
 		private readonly IMapper _mapper;
