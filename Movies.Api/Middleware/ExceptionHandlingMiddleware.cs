@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿//using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Application.Common.Exceptions;
 using System.Net;
-using System.Text.Json;
-using System.Threading.Tasks;
+using Movies.Shared.Models;
 
 namespace Movies.Api.Middleware
 {
@@ -44,6 +43,31 @@ namespace Movies.Api.Middleware
 				await httpContext.Response.WriteAsJsonAsync(problem);
 
 			}
+			catch (ValidationException ex)
+			{
+
+				var errors = ex.Errors
+					.Select(e => new ValidationError
+					{
+						PropertyName = e.PropertyName,
+						Message = e.ErrorMessage
+					}).ToList();
+
+				var problem = new 
+				{
+					Title = "Validation Failed",
+					Detail = "One or more validation errors occurred.",
+					Status = 400,
+					Instance = httpContext.Request.Path,
+					Errors = errors
+				};
+
+				httpContext.Response.StatusCode = 400;
+				httpContext.Response.ContentType = "application/problem+json";
+				//var body = JsonSerializer.Serialize(problem);
+				//await httpContext.Response.WriteAsync(body);
+				await httpContext.Response.WriteAsJsonAsync(problem);
+			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Unhandled exception occurred");
@@ -53,12 +77,12 @@ namespace Movies.Api.Middleware
 
 				httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-				var response = new
+				var response = new ProblemDetails
 				{
-					title = "Internal Server Error",
-					detail = ex.Message,
-					status = httpContext.Response.StatusCode,
-					instance = httpContext.Request.Path
+					Title = "Internal Server Error",
+					Detail = ex.Message,
+					Status = httpContext.Response.StatusCode,
+					Instance = httpContext.Request.Path
 				};
 
 				//var json = JsonSerializer.Serialize(response);
@@ -66,6 +90,7 @@ namespace Movies.Api.Middleware
 				await httpContext.Response.WriteAsJsonAsync(response);
 
 			}
+
 
 		}
 	}

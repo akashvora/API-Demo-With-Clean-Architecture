@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.Common.Extensions;
+using Movies.Api.HyperMedia;
 using Movies.Api.Mapping;
 using Movies.Api.Models.Requests;
+using Movies.Api.Models.Responses;
 using Movies.Application.Feature.Movies.Commands.Create;
 using Movies.Application.Feature.Movies.Commands.Delete;
 using Movies.Application.Feature.Movies.Commands.Update;
-using Movies.Application.Feature.Movies.Queries.GetAll;
 using Movies.Application.Feature.Movies.Queries.GetByIdOrSlug;
 using Movies.Application.Feature.Movies.UseCases.Create;
 using Movies.Application.Feature.Movies.UseCases.Delete;
@@ -32,9 +33,10 @@ namespace Movies.Api.Controllers
 		private readonly DeleteMovieUseCase _deleteMovieUseCase;
 		private readonly GetMovieByIdOrSlugUseCase _getMovieByIdOrSlugUseCase;
 		private readonly IRatingRepository _ratingRepository;  /// this will break the clean architecture. controller should have calling returing logic but in update call doing extra work on controlller
+		private readonly ILinkGeneratorService _linkService;
 		public MoviesController(//IMovieRepository movieRepository,
 			CreateMovieUseCase createMovieUseCase, GetMovieByIdOrSlugUseCase getMovieByIdOrSlugUseCase,UpdateMovieUseCase updateMovieUseCase, GetAllMoviesUseCase getAllMoviesUseCase, DeleteMovieUseCase deleteMovieUseCase, IRatingRepository ratingRepository
-			,IValidator<GetAllMoviesRequest> validator)
+			,IValidator<GetAllMoviesRequest> validator, ILinkGeneratorService linkGeneratorService)
 		{
 			//_movieRepository = movieRepository;
 			_createMovieUseCase = createMovieUseCase;
@@ -43,7 +45,7 @@ namespace Movies.Api.Controllers
 			_getAllMoviesUsecase = getAllMoviesUseCase;
 			_deleteMovieUseCase = deleteMovieUseCase;
 			_ratingRepository = ratingRepository;
-
+			_linkService = linkGeneratorService;
 
 		}
 
@@ -99,7 +101,28 @@ namespace Movies.Api.Controllers
 			if (result.IsFailure)
 				return StatusCode(result.Problem!.Status ?? 500, result.Problem);
 
-			return CreatedAtAction(nameof(Get), new { idOrSlug = result.Value?.Id }, result.Value);
+			MovieResponse movieResponse = new MovieResponse();
+
+			if (result.Value != null)
+			{
+				movieResponse = result.Value.MapToResponse();
+				var routeMap = new Dictionary<string, (string action, string method, string[] paramNames)>
+				{
+					["self"] = ("Get", "GET", new[] { "idOrSlug" }),                             // e.g. GET /movies/{id}
+					["update"] = ("Update", "PUT", new[] { "id" }),                          // e.g. PUT /movies/{id}
+					["delete"] = ("Delete", "DELETE", new[] { "id" }),                       // e.g. DELETE /movies/{id}
+					["create"] = ("Create", "POST", new string[] { }),                       // e.g. POST /movies
+					["getAll"] = ("GetAll", "GET", new[] { "Title", "YearOfRelease", "SortBy", "Page", "PageSize" }),
+				};
+
+				//var links = result.Value?.GetLinks(routeMap, HttpContext.GetUserId());
+				movieResponse.Links = _linkService.GenerateLinks(result.Value, "Movies", routeMap);
+				//return CreatedAtAction(nameof(Get), new { idOrSlug = movieResponse.Id }, movieResponse);
+			}
+
+			//return CreatedAtAction(nameof(Get), new { idOrSlug = result.Value?.Id }, result.Value);
+
+			return CreatedAtAction(nameof(Get), new { idOrSlug = movieResponse.Id }, movieResponse);
 
 		}
 

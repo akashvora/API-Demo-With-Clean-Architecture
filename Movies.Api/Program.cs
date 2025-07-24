@@ -130,6 +130,7 @@ builder.Services.AddInfrastutureServices();
 // register Rquest model validtors
 builder.Services
 	.AddApiRequestValidations();
+builder.Services.AddApiServicesExtension();
 
 // Register API specific service 
 builder.Services.ConfigureApiBehavior(); // for custom API response behavior 
