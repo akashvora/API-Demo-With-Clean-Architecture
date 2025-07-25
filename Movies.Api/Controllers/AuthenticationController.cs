@@ -25,6 +25,8 @@ namespace Movies.Api.Controllers
 
 		[ApiVersion(1.0)]
 		[HttpPost(ApiEndpoints.AuthenticationCls.Authentication)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		public async Task<IActionResult> GenerateToken([FromBody] LoginRequest request, CancellationToken cancellationToken)
 		{
 			var command = new LoginCommand

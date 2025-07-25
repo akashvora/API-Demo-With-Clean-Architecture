@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Movies.Api.ApiDepedencyInjection;
 using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.DependencyInjection;
+using Movies.Api.Health;
 using Movies.Api.Mapping;
 using Movies.Api.Middleware;
 using Movies.Api.Swagger;
@@ -106,6 +107,7 @@ builder.Services
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
+builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -194,6 +196,7 @@ if (app.Environment.IsDevelopment())
 // Register your custom exception middleware
 app.UseExceptionHandlingMiddleware();
 
+app.MapHealthChecks("/health");
 
 app.UseHttpsRedirection();
 
