@@ -38,8 +38,8 @@ namespace Movies.Api.Controllers
 		private readonly IRatingRepository _ratingRepository;  /// this will break the clean architecture. controller should have calling returing logic but in update call doing extra work on controlller
 		private readonly ILinkGeneratorService _linkService;
 		public MoviesController(//IMovieRepository movieRepository,
-			CreateMovieUseCase createMovieUseCase, GetMovieByIdOrSlugUseCase getMovieByIdOrSlugUseCase,UpdateMovieUseCase updateMovieUseCase, GetAllMoviesUseCase getAllMoviesUseCase, DeleteMovieUseCase deleteMovieUseCase, IRatingRepository ratingRepository
-			,IValidator<GetAllMoviesRequest> validator, ILinkGeneratorService linkGeneratorService)
+			CreateMovieUseCase createMovieUseCase, GetMovieByIdOrSlugUseCase getMovieByIdOrSlugUseCase, UpdateMovieUseCase updateMovieUseCase, GetAllMoviesUseCase getAllMoviesUseCase, DeleteMovieUseCase deleteMovieUseCase, IRatingRepository ratingRepository
+			, IValidator<GetAllMoviesRequest> validator, ILinkGeneratorService linkGeneratorService)
 		{
 			//_movieRepository = movieRepository;
 			_createMovieUseCase = createMovieUseCase;
@@ -73,7 +73,7 @@ namespace Movies.Api.Controllers
 		[Authorize(Policy = Policies.AdminOnly)]
 
 		[HttpPost(ApiEndpoints.Movies.Create)]
-		[ProducesResponseType(typeof(MovieResponse),StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken token)
 		{
@@ -101,7 +101,7 @@ namespace Movies.Api.Controllers
 				Slug = movie.Slug
 			};
 
-			var result  = await _createMovieUseCase.ExecuteAsync(command, token);
+			var result = await _createMovieUseCase.ExecuteAsync(command, token);
 
 			if (result.IsFailure)
 				return StatusCode(result.Problem!.Status ?? 500, result.Problem);
@@ -133,13 +133,14 @@ namespace Movies.Api.Controllers
 
 		[MapToApiVersion(1.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
+		//[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, CancellationToken token) 
+		public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, CancellationToken token)
 		{
-			var query = new GetMovieByIdOrSlugQuery { IdOrSlug=idOrSlug};
+			var query = new GetMovieByIdOrSlugQuery { IdOrSlug = idOrSlug };
 			var userId = HttpContext.GetUserId();
-			var movie = await _getMovieByIdOrSlugUseCase.ExecuteAsync(query,userId, token);
+			var movie = await _getMovieByIdOrSlugUseCase.ExecuteAsync(query, userId, token);
 			if (movie == null)
 				return NotFound();
 
@@ -157,6 +158,7 @@ namespace Movies.Api.Controllers
 
 		[MapToApiVersion(2.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
+		[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, CancellationToken token)
@@ -181,6 +183,7 @@ namespace Movies.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpGet(ApiEndpoints.Movies.GetAll)]
+		//[ResponseCache(Duration = 30, VaryByQueryKeys = new []{"title", "year", "sortBy", "page", "pagesize"} ,VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request , CancellationToken token)
 		{

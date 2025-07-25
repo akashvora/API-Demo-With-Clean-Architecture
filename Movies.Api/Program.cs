@@ -91,6 +91,9 @@ builder.Services.AddApiVersioning(
 
 	}).AddMvc().AddApiExplorer();
 
+
+//builder.Services.AddResponseCaching();
+
 // Add services to the container.
 
 //Register custom Filter
@@ -200,9 +203,10 @@ app.MapHealthChecks("/health");
 
 app.UseHttpsRedirection();
 
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseResponseCaching();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
