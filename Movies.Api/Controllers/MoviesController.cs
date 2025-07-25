@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.Common.Extensions;
 using Movies.Api.HyperMedia;
@@ -38,9 +39,10 @@ namespace Movies.Api.Controllers
 		private readonly GetMovieByIdOrSlugUseCase _getMovieByIdOrSlugUseCase;
 		private readonly IRatingRepository _ratingRepository;  /// this will break the clean architecture. controller should have calling returing logic but in update call doing extra work on controlller
 		private readonly ILinkGeneratorService _linkService;
+		private readonly IOutputCacheStore _outputCacheStore;
 		public MoviesController(//IMovieRepository movieRepository,
 			CreateMovieUseCase createMovieUseCase, GetMovieByIdOrSlugUseCase getMovieByIdOrSlugUseCase, UpdateMovieUseCase updateMovieUseCase, GetAllMoviesUseCase getAllMoviesUseCase, DeleteMovieUseCase deleteMovieUseCase, IRatingRepository ratingRepository
-			, IValidator<GetAllMoviesRequest> validator, ILinkGeneratorService linkGeneratorService)
+			, IValidator<GetAllMoviesRequest> validator, ILinkGeneratorService linkGeneratorService, IOutputCacheStore outputCacheStore)
 		{
 			//_movieRepository = movieRepository;
 			_createMovieUseCase = createMovieUseCase;
@@ -50,7 +52,7 @@ namespace Movies.Api.Controllers
 			_deleteMovieUseCase = deleteMovieUseCase;
 			_ratingRepository = ratingRepository;
 			_linkService = linkGeneratorService;
-
+			_outputCacheStore = outputCacheStore;
 		}
 
 		//[HttpPost(ApiEndpoints.Movies.Create)]
@@ -103,6 +105,7 @@ namespace Movies.Api.Controllers
 			};
 
 			var result = await _createMovieUseCase.ExecuteAsync(command, token);
+			await _outputCacheStore.EvictByTagAsync("movies", token);
 
 			if (result.IsFailure)
 				return StatusCode(result.Problem!.Status ?? 500, result.Problem);
@@ -134,6 +137,7 @@ namespace Movies.Api.Controllers
 
 		[MapToApiVersion(1.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
+		[OutputCache(PolicyName = "MovieCache")]
 		//[ResponseCache(Duration = SharedConstant.Durations.CacheDurationInSeconds, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -159,6 +163,7 @@ namespace Movies.Api.Controllers
 
 		[MapToApiVersion(2.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
+		[OutputCache(PolicyName = "MovieCache")]
 		//[ResponseCache(Duration = SharedConstant.Durations.CacheDurationInSeconds, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -184,6 +189,7 @@ namespace Movies.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpGet(ApiEndpoints.Movies.GetAll)]
+		[OutputCache(PolicyName ="MovieCache")]
 		//[ResponseCache(Duration = SharedConstant.Durations.CacheDurationInSeconds, VaryByQueryKeys = new []{"title", "year", "sortBy", "page", "pagesize"} ,VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request , CancellationToken token)
@@ -229,6 +235,8 @@ namespace Movies.Api.Controllers
 			if (!updated.Value)
 			{ return NotFound(); }
 
+			await _outputCacheStore.EvictByTagAsync("movies", token);
+
 			var response = movie.MapToResponse();
 			return Ok(response);
 		}
@@ -247,6 +255,9 @@ namespace Movies.Api.Controllers
 			if (!deleted.Value) { 
 				return NotFound(); 
 			}
+
+			await _outputCacheStore.EvictByTagAsync("movies", token);
+
 			return Ok(deleted);
 		}
 	}

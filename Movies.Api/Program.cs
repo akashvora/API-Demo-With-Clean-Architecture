@@ -93,6 +93,14 @@ builder.Services.AddApiVersioning(
 
 
 //builder.Services.AddResponseCaching();
+builder.Services.AddOutputCache(x => {
+	x.AddBasePolicy(c => c.Cache());
+	x.AddPolicy("MovieCache", c=>c.Cache()
+				.Expire(TimeSpan.FromMinutes(1))
+				.SetVaryByQuery(new[] { "title", "year","sortBy","page","pageSize"})
+				.Tag("movies")
+				);
+});
 
 // Add services to the container.
 
@@ -206,7 +214,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+//app.UseCors();
 //app.UseResponseCaching();
+app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
