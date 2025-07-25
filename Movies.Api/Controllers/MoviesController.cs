@@ -18,6 +18,7 @@ using Movies.Application.Feature.Movies.UseCases.GetAll;
 using Movies.Application.Feature.Movies.UseCases.GetByIdOrSlug;
 using Movies.Application.Feature.Movies.UseCases.Update;
 using Movies.Application.Feature.Rating.Interfaces;
+using Movies.Shared.Constants;
 
 
 namespace Movies.Api.Controllers
@@ -133,7 +134,7 @@ namespace Movies.Api.Controllers
 
 		[MapToApiVersion(1.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
-		//[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
+		//[ResponseCache(Duration = SharedConstant.Durations.CacheDurationInSeconds, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, CancellationToken token)
@@ -158,7 +159,7 @@ namespace Movies.Api.Controllers
 
 		[MapToApiVersion(2.0)]
 		[HttpGet(ApiEndpoints.Movies.Get)]
-		[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
+		//[ResponseCache(Duration = SharedConstant.Durations.CacheDurationInSeconds, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, CancellationToken token)
@@ -183,7 +184,7 @@ namespace Movies.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpGet(ApiEndpoints.Movies.GetAll)]
-		//[ResponseCache(Duration = 30, VaryByQueryKeys = new []{"title", "year", "sortBy", "page", "pagesize"} ,VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
+		//[ResponseCache(Duration = SharedConstant.Durations.CacheDurationInSeconds, VaryByQueryKeys = new []{"title", "year", "sortBy", "page", "pagesize"} ,VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request , CancellationToken token)
 		{
