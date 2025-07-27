@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Movies.Application.Feature.Movies.Queries.GetAll
 {
-	public class GetAllMoviesOptionsValidator:AbstractValidator<GetAllMoviesOptions>
+	public class GetAllMoviesOptionsValidator //:AbstractValidator<GetAllMoviesOptions>
 	{
 		private static readonly string[] AcceptableSortFields = 
 		{

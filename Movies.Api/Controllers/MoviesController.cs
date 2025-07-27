@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.Common.Extensions;
+using Movies.Api.Filters;
 using Movies.Api.HyperMedia;
 using Movies.Api.Mapping;
 using Movies.Api.Models.Requests;
@@ -19,7 +20,6 @@ using Movies.Application.Feature.Movies.UseCases.GetAll;
 using Movies.Application.Feature.Movies.UseCases.GetByIdOrSlug;
 using Movies.Application.Feature.Movies.UseCases.Update;
 using Movies.Application.Feature.Rating.Interfaces;
-using Movies.Shared.Constants;
 
 
 namespace Movies.Api.Controllers
@@ -28,7 +28,7 @@ namespace Movies.Api.Controllers
 	[ApiController]
 	[ApiVersion(1.0)]  // for better practice of versioning version it in different folder wise like V1/Controllers etc; V2/Controllers etc
 	[ApiVersion(2.0)]
-	[Authorize]
+	//[Authorize]
 	public class MoviesController : ControllerBase
 	{
 		//private readonly IMovieRepository _movieRepository;
@@ -73,8 +73,9 @@ namespace Movies.Api.Controllers
 		//}
 
 
-		[Authorize(Policy = Policies.AdminOnly)]
-
+		//[Authorize(Policy = Policies.AdminOnly)]
+		[ApiVersion(1.0)]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
 		[HttpPost(ApiEndpoints.Movies.Create)]
 		[ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
@@ -241,11 +242,14 @@ namespace Movies.Api.Controllers
 			return Ok(response);
 		}
 
+		[Authorize(Policies.AdminOnly)]
 		[HttpDelete(ApiEndpoints.Movies.Delete)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
 		{
+			var userId = HttpContext.GetUserId();
+
 			var command = new DeleteMovieCommand 
 			{
 				Id = id

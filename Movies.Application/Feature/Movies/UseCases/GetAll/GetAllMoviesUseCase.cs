@@ -15,13 +15,14 @@ namespace Movies.Application.Feature.Movies.UseCases.GetAll
 	{
 		private readonly IMovieRepository _movieRepository;
 		private readonly IMapper _mapper;
-		private readonly IValidator<GetAllMoviesOptions> _validator;
+		//private readonly IValidator<GetAllMoviesOptions> _validator;
 
-		public GetAllMoviesUseCase(IMovieRepository movieRepository, IMapper mapper, IValidator<GetAllMoviesOptions> validator)
+		public GetAllMoviesUseCase(IMovieRepository movieRepository, IMapper mapper //, IValidator<GetAllMoviesOptions> validator
+			)
 		{
 			_movieRepository = movieRepository;
 			_mapper = mapper;
-			_validator = validator;
+			//_validator = validator;
 		}
 
 		public async Task<Result<PagedResult<Movie>>> ExecuteAsync(GetAllMoviesQuery query, CancellationToken token = default)

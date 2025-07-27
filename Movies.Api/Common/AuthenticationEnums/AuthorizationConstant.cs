@@ -13,4 +13,9 @@
 		public const string AdminOrTrustMember = "AdminOrTrustMember";
 	}
 
+	public static class AuthConstant
+	{
+	   public const string ApiKeyHeaderName = "x-api-key";
+	}
+
 }

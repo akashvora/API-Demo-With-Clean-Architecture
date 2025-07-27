@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Movies.Api.ApiDepedencyInjection;
 using Movies.Api.Common.AuthenticationEnums;
 using Movies.Api.DependencyInjection;
+using Movies.Api.Filters;
 using Movies.Api.Health;
 using Movies.Api.Mapping;
 using Movies.Api.Middleware;
@@ -73,6 +74,7 @@ builder.Services.AddAutoMapper(cfg =>
 	cfg.AddProfile<RepositoryMappingProfile>();
 });
 //builder.Services.AddAutoMapper(typeof(Program)); // use this if all mapping profiles in same assembly
+
 
 builder.Services.AddApiVersioning(
 	options => {
@@ -143,8 +145,13 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddAuthorization(options =>
 {
+	//options.AddPolicy(Policies.AdminOnly, policy =>
+	//	policy.RequireRole(Roles.Admin));
+
+	// we added api-key requirement in AdminAuthRequirement filter so commented above lines
+
 	options.AddPolicy(Policies.AdminOnly, policy =>
-		policy.RequireRole(Roles.Admin));
+		policy.Requirements.Add(new AdminAuthRequirement(builder.Configuration["ApiKey"]!)));
 
 	options.AddPolicy(Policies.TrustMemberOnly, policy =>
 		policy.RequireRole(Roles.TrustMember));
