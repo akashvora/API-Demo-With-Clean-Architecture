@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api.SDK", "Movies.SD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api.SDK.Consumer", "Movies.Api.SDK.Consumer\Movies.Api.SDK.Consumer.csproj", "{F829821F-8D5C-4C5F-A092-3C82B0B0E221}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minimal API Example", "Minimal API Example\Minimal API Example.csproj", "{BF6ED664-E519-4CB9-8E45-E065A71C47E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF6ED664-E519-4CB9-8E45-E065A71C47E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF6ED664-E519-4CB9-8E45-E065A71C47E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF6ED664-E519-4CB9-8E45-E065A71C47E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF6ED664-E519-4CB9-8E45-E065A71C47E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

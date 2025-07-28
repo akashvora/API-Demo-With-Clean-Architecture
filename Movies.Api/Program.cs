@@ -21,7 +21,6 @@ using Movies.Infrastructure.Database;
 using NpgsqlTypes;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
-using Swashbuckle.AspNetCore.Swagger;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -111,8 +110,7 @@ builder.Services.AddOutputCache(x => {
 //	.AddControllers()
 //	.AddApiFilters();
 
-builder.Services
-	.AddControllers();
+//builder.Services.AddControllers();   // When uses minimum api; Controller services not need so remove or comment it but we have common demonstrating normal api as well as minimal api so we keep it as it is 
 // .AddApiFilters(); // if you want to use custom filters for validation, then do not use automatic validation,
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -226,6 +224,6 @@ app.UseAuthorization();
 app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
-app.MapControllers();
-
+//app.MapControllers(); // When uses minimum api; Controller services not need so remove or comment it but we have common demonstrating normal api as well as minimal api so we keep it as it is 
+app.MapApiEndpoints(); // Register minimal API endpoints
 app.Run();
