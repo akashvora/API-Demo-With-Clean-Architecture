@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Shared", "Movies.Shared\Movies.Shared.csproj", "{811D25E2-3A39-4504-9B67-AD63EFC9623D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api.SDK", "Movies.SDK\Movies.Api.SDK.csproj", "{16D2392B-740F-4311-B4C5-10EC42F983FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api.SDK.Consumer", "Movies.Api.SDK.Consumer\Movies.Api.SDK.Consumer.csproj", "{F829821F-8D5C-4C5F-A092-3C82B0B0E221}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{811D25E2-3A39-4504-9B67-AD63EFC9623D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16D2392B-740F-4311-B4C5-10EC42F983FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16D2392B-740F-4311-B4C5-10EC42F983FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16D2392B-740F-4311-B4C5-10EC42F983FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16D2392B-740F-4311-B4C5-10EC42F983FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F829821F-8D5C-4C5F-A092-3C82B0B0E221}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
